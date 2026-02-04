@@ -398,15 +398,27 @@ function iniciarCamera() {
         return;
     }
 
+    if (cameraQR) {
+        cameraQR.stop().catch(() => {});
+        cameraQR.clear();
+    }
+
     cameraQR = new Html5Qrcode("reader");
 
     cameraQR.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: 250 },
+        { facingMode: { exact: "environment" } },
+        {
+            fps: 10,
+            qrbox: { width: 250, height: 250 },
+            aspectRatio: 1.0,
+            disableFlip: false
+        },
         (decodedText) => {
             console.log("QR lido:", decodedText);
 
-            cameraQR.stop();
+            cameraQR.stop().then(() => {
+                cameraQR.clear();
+            });
 
             let qrId = null;
 
@@ -443,6 +455,7 @@ function iniciarCamera() {
         alert("Erro ao abrir a câmera: " + err);
     });
 }
+
 
         // DADOS DO JOGO
         const qrCodes = [
