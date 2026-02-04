@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 QR Codes para Caça na Escola - Segurança Digital</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 210mm; /* A4 */
+            margin: 0 auto;
+            background: white;
+            padding: 20mm;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 28px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 15px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+            font-size: 18px;
+        }
+        
+        .qr-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .qr-card {
+            border: 3px solid;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: transform 0.3s;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .qr-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .qr-card.safe {
+            border-color: #27ae60;
+            background: linear-gradient(135deg, #f8fff9 0%, #e8f6ef 100%);
+        }
+        
+        .qr-card.danger {
+            border-color: #e74c3c;
+            background: linear-gradient(135deg, #fff8f8 0%, #ffebee 100%);
+        }
+        
+        .qr-card.suspicious {
+            border-color: #f39c12;
+            background: linear-gradient(135deg, #fffaf0 0%, #fff8e1 100%);
+        }
+        
+        .qr-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .qr-icon {
+            font-size: 28px;
+        }
+        
+        .qr-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .qr-location {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin: 10px 0;
+            padding: 8px;
+            background: rgba(0,0,0,0.03);
+            border-radius: 8px;
+        }
+        
+        .qr-description {
+            font-size: 14px;
+            color: #5d6d7e;
+            margin-bottom: 20px;
+            min-height: 60px;
+        }
+        
+        .qr-image-container {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            border: 2px dashed #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .qr-image {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .qr-status {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .status-safe {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+        
+        .status-danger {
+            background: #fadbd8;
+            color: #e74c3c;
+        }
+        
+        .status-suspicious {
+            background: #fef5e7;
+            color: #f39c12;
+        }
+        
+        .instructions {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 25px;
+            margin: 40px 0;
+            border-radius: 10px;
+        }
+        
+        .print-button {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 30px 0;
+            transition: background 0.3s;
+            text-align: center;
+        }
+        
+        .print-button:hover {
+            background: #2980b9;
+        }
+        
+        .teacher-notes {
+            background: #fff8e1;
+            border: 2px dashed #ffc107;
+            padding: 20px;
+            margin-top: 40px;
+            border-radius: 10px;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                padding: 0;
+            }
+            
+            .print-button, .teacher-notes {
+                display: none;
+            }
+            
+            .qr-card {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .qr-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 10mm;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 QR CODES PARA CAÇA NA ESCOLA</h1>
+        <p class="subtitle">Semana de Segurança Digital - Atividade Interativa</p>
+        
+        <div class="instructions">
+            <h3>📋 COMO USAR ESTES QR CODES:</h3>
+            <ol style="margin-left: 20px; margin-top: 10px;">
+                <li><strong>Imprima</strong> esta página em papel A4</li>
+                <li><strong>Recorte</strong> cada QR Code (ou imprima um por página)</li>
+                <li><strong>Cole</strong> nos locais indicados de cada cartão</li>
+                <li><strong>Alunos escaneiam</strong> com o jogo mobile</li>
+                <li><strong>Discuta</strong> por que cada um é seguro ou perigoso</li>
+            </ol>
+        </div>
+        
+        <div class="qr-grid">
+            <!-- QR CODE 1: BIBLIOTECA (SEGURO) -->
+            <div class="qr-card safe">
+                <div class="qr-header">
+                    <div class="qr-icon">📚</div>
+                    <div class="qr-title">BIBLIOTECA DA ESCOLA</div>
+                </div>
+                
+                <div class="qr-location">
+                    📍 <strong>Local:</strong> Parede da Biblioteca
+                </div>
+                
+                <div class="qr-description">
+                    QR Code oficial da biblioteca. Leva ao catálogo online de livros disponíveis para empréstimo.
+                </div>
+                
+                <div class="qr-image-container">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://biblioteca.escola.edu.br/catalogo&color=27ae60&bgcolor=ffffff&format=png&margin=10&qzone=2"
+                         alt="QR Code Biblioteca"
+                         class="qr-image">
+                </div>
+                
+                <div class="qr-status status-safe">
+                    ✅ SEGURO - Fonte Confiável
+                </div>
+            </div>
+            
+            <!-- QR CODE 2: SALA DOS PROFESSORES (SEGURO) -->
+            <div class="qr-card safe">
+                <div class="qr-header">
+                    <div class="qr-icon">👨‍🏫</div>
+                    <div class="qr-title">COMUNICADO IMPORTANTE</div>
+                </div>
+                
+                <div class="qr-location">
+                    📍 <strong>Local:</strong> Porta da Sala dos Professores
+                </div>
+                
+                <div class="qr-description">
+                    Comunicado oficial da direção sobre mudanças no horário das aulas. Informação interna da escola.
+                </div>
+                
+                <div class="qr-image-container">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://escola.edu.br/comunicado-urgente&color=27ae60&bgcolor=ffffff&format=png&margin=10&qzone=2"
+                         alt="QR Code Comunicado"
+                         class="qr-image">
+                </div>
+                
+                <div class="qr-status status-safe">
+                    ✅ SEGURO - Informação Oficial
+                </div>
+            </div>
+            
+            <!-- QR CODE 3: CORREDOR (SUSPEITO) -->
+            <div class="qr-card suspicious">
+                <div class="qr-header">
+                    <div class="qr-icon">🎧</div>
+                    <div class="qr-title">MÚSICA GRATUITA</div>
+                </div>
+                
+                <div class="qr-location">
+                    📍 <strong>Local:</strong> Corredor do 1º Andar
+                </div>
+                
+                <div class="qr-description">
+                    "Escaneie para baixar músicas grátis! Todas as últimas hits sem pagar nada!"
+                </div>
+                
+                <div class="qr-image-container">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=http://musicas-gratis-fake.site/download&color=f39c12&bgcolor=ffffff&format=png&margin=10&qzone=2"
+                         alt="QR Code Música Grátis"
+                         class="qr-image">
+                </div>
+                
+                <div class="qr-status status-suspicious">
+                    ⚠️ SUSPEITO - Oferta Irreal
+                </div>
+            </div>
+            
+            <!-- QR CODE 4: ESTACIONAMENTO (PERIGOSO) -->
+            <div class="qr-card danger">
+                <div class="qr-header">
+                    <div class="qr-icon">🚗</div>
+                    <div class="qr-title">PRÊMIO DO ESTACIONAMENTO</div>
+                </div>
+                
+                <div class="qr-location">
+                    📍 <strong>Local:</strong> Estacionamento da Escola
+                </div>
+                
+                <div class="qr-description">
+                    "Parabéns! Você foi sorteado! Escaneie para resgatar seu prêmio especial do estacionamento!"
+                </div>
+                
+                <div class="qr-image-container">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=http://premio-estacionamento-golpe.com/resgate&color=e74c3c&bgcolor=ffffff&format=png&margin=10&qzone=2"
+                         alt="QR Code Prêmio Falso"
+                         class="qr-image">
+                </div>
+                
+                <div class="qr-status status-danger">
+                    ❌ PERIGOSO - Golpe Provável
+                </div>
+            </div>
+            
+            <!-- QR CODE 5: VALE UM BRINDE (PERIGOSO) -->
+            <div class="qr-card danger">
+                <div class="qr-header">
+                    <div class="qr-icon">🎁</div>
+                    <div class="qr-title">VOCÊ GANHOU UM BRINDE!</div>
+                </div>
+                
+                <div class="qr-location">
+                    📍 <strong>Local:</strong> Banheiro dos Alunos
+                </div>
+                
+                <div class="qr-description">
+                    "Parabéns! Você é nosso visitante nº 1000! Escaneie para receber seu brinde exclusivo!"
+                </div>
+                
+                <div class="qr-image-container">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=http://brinde-gratuito-golpe.net/claim&color=e74c3c&bgcolor=ffffff&format=png&margin=10&qzone=2"
+                         alt="QR Code Brinde Falso"
+                         class="qr-image">
+                </div>
+                
+                <div class="qr-status status-danger">
+                    ❌ PERIGOSO - Golpe de Brinde
+                </div>
+            </div>
+            
+            <!-- QR CODE 6: CAFÉ (SEGURO) -->
+            <div class="qr-card safe">
+                <div class="qr-header">
+                    <div class="qr-icon">☕</div>
+                    <div class="qr-title">CANTINA DIGITAL</div>
+                </div>
+                
+                <div class="qr-location">
+                    📍 <strong>Local:</strong> Cantina/Lanchonete
+                </div>
+                
+                <div class="qr-description">
+                    Cardápio semanal da cantina com preços e opções. Pode fazer pedidos antecipados.
+                </div>
+                
+                <div class="qr-image-container">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://cantina.escola.edu.br/cardapio&color=27ae60&bgcolor=ffffff&format=png&margin=10&qzone=2"
+                         alt="QR Code Cantina"
+                         class="qr-image">
+                </div>
+                
+                <div class="qr-status status-safe">
+                    ✅ SEGURO - Serviço Oficial
+                </div>
+            </div>
+        </div>
+        
+        <button class="print-button" onclick="window.print()">
+            🖨️ IMPRIMIR TODOS OS QR CODES
+        </button>
+        
+        <div class="teacher-notes">
+            <h3>📝 NOTAS PARA O PROFESSOR:</h3>
+            <p><strong>QR Codes Seguros (Verde):</strong></p>
+            <ul style="margin-left: 20px; margin-bottom: 15px;">
+                <li>Em locais oficiais da escola</li>
+                <li>URLs começam com https://</li>
+                <li>Domínios .edu.br ou .gov.br</li>
+                <li>Propósito educativo ou informativo</li>
+            </ul>
+            
+            <p><strong>QR Codes Perigosos (Vermelho):</strong></p>
+            <ul style="margin-left: 20px; margin-bottom: 15px;">
+                <li>Em locais não oficiais (banheiro, estacionamento)</li>
+                <li>Promessas irrealistas (brindes, prêmios)</li>
+                <li>URLs começam com http:// (sem 's' de segurança)</li>
+                <li>Domínios suspeitos (.fake, .golpe, .site)</li>
+            </ul>
+            
+            <p><strong>Suspensos (Amarelo):</strong> Oferecem algo "gratuito" mas não claramente malicioso.</p>
+        </div>
+        
+        <!-- MAPA DA ESCOLA PARA COLOCAÇÃO -->
+        <div style="margin-top: 50px; padding: 25px; background: #f8f9fa; border-radius: 10px; border: 2px solid #dee2e6;">
+            <h3 style="color: #2c3e50; margin-bottom: 20px;">🗺️ SUGESTÃO DE DISTRIBUIÇÃO NA ESCOLA:</h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div style="padding: 15px; background: #d5f4e6; border-radius: 8px;">
+                    <strong>📚 Biblioteca:</strong> QR Code 1 (Seguro)
+                </div>
+                <div style="padding: 15px; background: #d5f4e6; border-radius: 8px;">
+                    <strong>👨‍🏫 Sala Professores:</strong> QR Code 2 (Seguro)
+                </div>
+                <div style="padding: 15px; background: #fef5e7; border-radius: 8px;">
+                    <strong>🚶 Corredor 1º Andar:</strong> QR Code 3 (Suspeito)
+                </div>
+                <div style="padding: 15px; background: #fadbd8; border-radius: 8px;">
+                    <strong>🚗 Estacionamento:</strong> QR Code 4 (Perigoso)
+                </div>
+                <div style="padding: 15px; background: #fadbd8; border-radius: 8px;">
+                    <strong>🚻 Banheiro:</strong> QR Code 5 (Perigoso)
+                </div>
+                <div style="padding: 15px; background: #d5f4e6; border-radius: 8px;">
+                    <strong>☕ Cantina:</strong> QR Code 6 (Seguro)
+                </div>
+            </div>
+            
+            <p style="margin-top: 20px; font-size: 14px; color: #666;">
+                <strong>Dica:</strong> Cole os QR Codes discretamente. Os alunos devem "descobri-los" durante a caça!
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Função para gerar QR Codes individuais se necessário
+        function gerarQRCodeIndividual(numero) {
+            const qrCodes = [
+                {
+                    nome: "Biblioteca",
+                    url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://biblioteca.escola.edu.br/catalogo&color=27ae60&format=png",
+                    local: "biblioteca-qr.png"
+                },
+                {
+                    nome: "Sala dos Professores", 
+                    url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://escola.edu.br/comunicado-urgente&color=27ae60&format=png",
+                    local: "professores-qr.png"
+                },
+                {
+                    nome: "Corredor",
+                    url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=http://musicas-gratis-fake.site/download&color=f39c12&format=png",
+                    local: "corredor-qr.png"
+                },
+                {
+                    nome: "Estacionamento",
+                    url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=http://premio-estacionamento-golpe.com/resgate&color=e74c3c&format=png",
+                    local: "estacionamento-qr.png"
+                },
+                {
+                    nome: "Vale um Brinde",
+                    url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=http://brinde-gratuito-golpe.net/claim&color=e74c3c&format=png",
+                    local: "brinde-qr.png"
+                },
+                {
+                    nome: "Cantina",
+                    url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://cantina.escola.edu.br/cardapio&color=27ae60&format=png",
+                    local: "cantina-qr.png"
+                }
+            ];
+            
+            if(numero >= 1 && numero <= 6) {
+                const qr = qrCodes[numero-1];
+                window.open(qr.url, '_blank');
+                console.log(`QR Code ${numero} (${qr.nome}) gerado!`);
+            }
+        }
+        
+        // Adiciona evento de impressão personalizado
+        window.addEventListener('beforeprint', () => {
+            document.querySelector('.print-button').style.display = 'none';
+            document.querySelector('.teacher-notes').style.display = 'none';
+        });
+        
+        window.addEventListener('afterprint', () => {
+            document.querySelector('.print-button').style.display = 'block';
+            document.querySelector('.teacher-notes').style.display = 'block';
+        });
+        
+        // Instruções para o professor
+        console.log("🎯 QR CODES PARA IMPRESSÃO - INSTRUÇÕES:");
+        console.log("1. Clique no botão 'IMPRIMIR' ou pressione Ctrl+P");
+        console.log("2. Imprima em papel A4 (recomendado: qualidade média)");
+        console.log("3. Recorte cada QR Code nas linhas pontilhadas");
+        console.log("4. Cole nos locais indicados na escola");
+        console.log("5. Os QR Codes levam a páginas fictícias educativas");
+        console.log("");
+        console.log("📱 Para gerar QR Codes individuais, use:");
+        console.log("gerarQRCodeIndividual(1) - Biblioteca");
+        console.log("gerarQRCodeIndividual(2) - Sala dos Professores");
+        console.log("gerarQRCodeIndividual(3) - Corredor");
+        console.log("gerarQRCodeIndividual(4) - Estacionamento");
+        console.log("gerarQRCodeIndividual(5) - Vale um Brinde");
+        console.log("gerarQRCodeIndividual(6) - Cantina");
+        
+        // Atalhos de teclado para o professor
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+Shift+1 a 6 gera QR Codes individuais
+            if(e.ctrlKey && e.shiftKey && e.key >= '1' && e.key <= '6') {
+                e.preventDefault();
+                gerarQRCodeIndividual(parseInt(e.key));
+            }
+            
+            // Ctrl+P com mensagem personalizada
+            if(e.ctrlKey && e.key === 'p') {
+                e.preventDefault();
+                alert("🎯 Imprimindo QR Codes para a Caça na Escola!\n\nRecomendações:\n• Papel A4\n• Qualidade Média\n• Recortar após impressão");
+                setTimeout(() => window.print(), 500);
+            }
+        });
+    </script>
+</body>
+</html>
