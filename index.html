@@ -2,540 +2,754 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎯 QR Codes para Caça na Escola - Segurança Digital</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🕵️ Caça aos QR Codes - Segurança Digital</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
         
         body {
-            font-family: 'Arial', sans-serif;
-            background: #f0f2f5;
-            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
             padding: 20px;
+            overflow-x: hidden;
         }
         
         .container {
-            max-width: 210mm; /* A4 */
+            max-width: 500px;
             margin: 0 auto;
-            background: white;
-            padding: 20mm;
-            box-shadow: 0 5px 30px rgba(0,0,0,0.1);
-            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .header {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
         }
         
         h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 30px;
-            font-size: 28px;
-            border-bottom: 3px solid #3498db;
-            padding-bottom: 15px;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
         
         .subtitle {
-            text-align: center;
-            color: #7f8c8d;
-            margin-bottom: 40px;
-            font-size: 18px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
         }
         
-        .qr-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 30px;
-            margin-bottom: 40px;
+        /* TELA INICIAL */
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s;
         }
         
-        .qr-card {
-            border: 3px solid;
-            border-radius: 15px;
-            padding: 25px;
-            text-align: center;
-            transition: transform 0.3s;
-            background: white;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        .screen.active {
+            display: block;
         }
         
-        .qr-card:hover {
-            transform: translateY(-5px);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
-        .qr-card.safe {
-            border-color: #27ae60;
-            background: linear-gradient(135deg, #f8fff9 0%, #e8f6ef 100%);
-        }
-        
-        .qr-card.danger {
-            border-color: #e74c3c;
-            background: linear-gradient(135deg, #fff8f8 0%, #ffebee 100%);
-        }
-        
-        .qr-card.suspicious {
-            border-color: #f39c12;
-            background: linear-gradient(135deg, #fffaf0 0%, #fff8e1 100%);
-        }
-        
-        .qr-header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .qr-icon {
-            font-size: 28px;
-        }
-        
-        .qr-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-        
-        .qr-location {
-            color: #7f8c8d;
-            font-size: 14px;
-            margin: 10px 0;
-            padding: 8px;
-            background: rgba(0,0,0,0.03);
-            border-radius: 8px;
-        }
-        
-        .qr-description {
-            font-size: 14px;
-            color: #5d6d7e;
-            margin-bottom: 20px;
-            min-height: 60px;
-        }
-        
-        .qr-image-container {
-            width: 180px;
-            height: 180px;
-            margin: 0 auto 15px;
-            padding: 15px;
-            background: white;
-            border-radius: 12px;
-            border: 2px dashed #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .qr-image {
-            max-width: 100%;
-            height: auto;
-        }
-        
-        .qr-status {
-            display: inline-block;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 14px;
-            margin-top: 10px;
-        }
-        
-        .status-safe {
-            background: #d5f4e6;
-            color: #27ae60;
-        }
-        
-        .status-danger {
-            background: #fadbd8;
-            color: #e74c3c;
-        }
-        
-        .status-suspicious {
-            background: #fef5e7;
-            color: #f39c12;
-        }
-        
-        .instructions {
-            background: #e3f2fd;
-            border-left: 5px solid #2196f3;
-            padding: 25px;
-            margin: 40px 0;
-            border-radius: 10px;
-        }
-        
-        .print-button {
+        /* BOTÕES MOBILE */
+        .btn {
             display: block;
             width: 100%;
             padding: 18px;
-            background: #3498db;
-            color: white;
+            margin: 15px 0;
+            background: white;
+            color: #667eea;
             border: none;
-            border-radius: 10px;
-            font-size: 18px;
+            border-radius: 15px;
+            font-size: 1.2rem;
             font-weight: bold;
             cursor: pointer;
-            margin: 30px 0;
-            transition: background 0.3s;
-            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
         
-        .print-button:hover {
-            background: #2980b9;
+        .btn:hover, .btn:active {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
         
-        .teacher-notes {
-            background: #fff8e1;
-            border: 2px dashed #ffc107;
+        .btn-scan {
+            background: #4CAF50;
+            color: white;
+            font-size: 1.3rem;
+        }
+        
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+        
+        .btn-safe {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        /* SCANNER SIMULADO */
+        .scanner-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 20px auto;
+            border: 3px solid white;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        
+        .scanner-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(0deg, transparent 50%, rgba(0,255,0,0.1) 50%);
+            animation: scan 2s infinite linear;
+        }
+        
+        @keyframes scan {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+        
+        /* CARTAS DE QR CODE */
+        .qr-card {
+            background: white;
+            color: #333;
+            border-radius: 15px;
             padding: 20px;
-            margin-top: 40px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: left;
+        }
+        
+        .qr-image {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 15px;
+            display: block;
             border-radius: 10px;
         }
         
-        @media print {
-            body {
-                background: white;
-                padding: 0;
+        /* PLACAR */
+        .score-board {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            z-index: 100;
+        }
+        
+        /* FEEDBACK */
+        .feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            color: #333;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 1000;
+            max-width: 90%;
+        }
+        
+        .feedback.show {
+            display: block;
+            animation: popIn 0.3s;
+        }
+        
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        
+        /* PROGRESSO */
+        .progress-bar {
+            height: 10px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: #4CAF50;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        /* RESPONSIVIDADE EXTREMA */
+        @media (max-width: 480px) {
+            .scanner-container {
+                width: 250px;
+                height: 250px;
             }
             
-            .container {
-                box-shadow: none;
-                padding: 0;
+            h1 {
+                font-size: 1.5rem;
             }
             
-            .print-button, .teacher-notes {
-                display: none;
-            }
-            
-            .qr-card {
-                break-inside: avoid;
-                page-break-inside: avoid;
+            .btn {
+                padding: 15px;
+                font-size: 1.1rem;
             }
         }
         
-        @media (max-width: 768px) {
-            .qr-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .container {
-                padding: 10mm;
-            }
+        /* ANIMAÇÕES */
+        .vibrate {
+            animation: vibrate 0.3s linear infinite;
+        }
+        
+        @keyframes vibrate {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+        
+        .celebrate {
+            animation: celebrate 0.5s ease;
+        }
+        
+        @keyframes celebrate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
         }
     </style>
+
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+
 </head>
 <body>
+    <!-- PLACAR -->
+    <div class="score-board" id="scoreBoard">
+        🏆 <span id="score">0</span>/5
+    </div>
+    
     <div class="container">
-        <h1>🎯 QR CODES PARA CAÇA NA ESCOLA</h1>
-        <p class="subtitle">Semana de Segurança Digital - Atividade Interativa</p>
-        
-        <div class="instructions">
-            <h3>📋 COMO USAR ESTES QR CODES:</h3>
-            <ol style="margin-left: 20px; margin-top: 10px;">
-                <li><strong>Imprima</strong> esta página em papel A4</li>
-                <li><strong>Recorte</strong> cada QR Code (ou imprima um por página)</li>
-                <li><strong>Cole</strong> nos locais indicados de cada cartão</li>
-                <li><strong>Alunos escaneiam</strong> com o jogo mobile</li>
-                <li><strong>Discuta</strong> por que cada um é seguro ou perigoso</li>
-            </ol>
-        </div>
-        
-        <div class="qr-grid">
-            <!-- QR CODE 1: BIBLIOTECA (SEGURO) -->
-            <div class="qr-card safe">
-                <div class="qr-header">
-                    <div class="qr-icon">📚</div>
-                    <div class="qr-title">BIBLIOTECA DA ESCOLA</div>
-                </div>
-                
-                <div class="qr-location">
-                    📍 <strong>Local:</strong> Parede da Biblioteca
-                </div>
-                
-                <div class="qr-description">
-                    QR Code oficial da biblioteca. Leva ao catálogo online de livros disponíveis para empréstimo.
-                </div>
-                
-                <div class="qr-image-container">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://biblioteca.escola.edu.br/catalogo&color=27ae60&bgcolor=ffffff&format=png&margin=10&qzone=2"
-                         alt="QR Code Biblioteca"
-                         class="qr-image">
-                </div>
-                
-                <div class="qr-status status-safe">
-                    ✅ SEGURO - Fonte Confiável
-                </div>
+        <!-- TELA 1: INTRODUÇÃO -->
+        <div class="screen active" id="screen1">
+            <div class="header">
+                <h1>🔍 CAÇA AOS QR CODES</h1>
+                <p class="subtitle">Jogo Educativo de Segurança Digital</p>
             </div>
             
-            <!-- QR CODE 2: SALA DOS PROFESSORES (SEGURO) -->
-            <div class="qr-card safe">
-                <div class="qr-header">
-                    <div class="qr-icon">👨‍🏫</div>
-                    <div class="qr-title">COMUNICADO IMPORTANTE</div>
-                </div>
-                
-                <div class="qr-location">
-                    📍 <strong>Local:</strong> Porta da Sala dos Professores
-                </div>
-                
-                <div class="qr-description">
-                    Comunicado oficial da direção sobre mudanças no horário das aulas. Informação interna da escola.
-                </div>
-                
-                <div class="qr-image-container">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://escola.edu.br/comunicado-urgente&color=27ae60&bgcolor=ffffff&format=png&margin=10&qzone=2"
-                         alt="QR Code Comunicado"
-                         class="qr-image">
-                </div>
-                
-                <div class="qr-status status-safe">
-                    ✅ SEGURO - Informação Oficial
-                </div>
+            <div style="margin: 30px 0;">
+                <p>Encontre QR Codes pela escola e decida:</p>
+                <p><strong>É SEGURO ou PERIGOSO?</strong></p>
             </div>
             
-            <!-- QR CODE 3: CORREDOR (SUSPEITO) -->
-            <div class="qr-card suspicious">
-                <div class="qr-header">
-                    <div class="qr-icon">🎧</div>
-                    <div class="qr-title">MÚSICA GRATUITA</div>
-                </div>
-                
-                <div class="qr-location">
-                    📍 <strong>Local:</strong> Corredor do 1º Andar
-                </div>
-                
-                <div class="qr-description">
-                    "Escaneie para baixar músicas grátis! Todas as últimas hits sem pagar nada!"
-                </div>
-                
-                <div class="qr-image-container">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=http://musicas-gratis-fake.site/download&color=f39c12&bgcolor=ffffff&format=png&margin=10&qzone=2"
-                         alt="QR Code Música Grátis"
-                         class="qr-image">
-                </div>
-                
-                <div class="qr-status status-suspicious">
-                    ⚠️ SUSPEITO - Oferta Irreal
-                </div>
-            </div>
+            <button class="btn btn-scan" onclick="nextScreen(2)">
+                📱 COMEÇAR JOGO
+            </button>
             
-            <!-- QR CODE 4: ESTACIONAMENTO (PERIGOSO) -->
-            <div class="qr-card danger">
-                <div class="qr-header">
-                    <div class="qr-icon">🚗</div>
-                    <div class="qr-title">PRÊMIO DO ESTACIONAMENTO</div>
-                </div>
-                
-                <div class="qr-location">
-                    📍 <strong>Local:</strong> Estacionamento da Escola
-                </div>
-                
-                <div class="qr-description">
-                    "Parabéns! Você foi sorteado! Escaneie para resgatar seu prêmio especial do estacionamento!"
-                </div>
-                
-                <div class="qr-image-container">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=http://premio-estacionamento-golpe.com/resgate&color=e74c3c&bgcolor=ffffff&format=png&margin=10&qzone=2"
-                         alt="QR Code Prêmio Falso"
-                         class="qr-image">
-                </div>
-                
-                <div class="qr-status status-danger">
-                    ❌ PERIGOSO - Golpe Provável
-                </div>
-            </div>
-            
-            <!-- QR CODE 5: VALE UM BRINDE (PERIGOSO) -->
-            <div class="qr-card danger">
-                <div class="qr-header">
-                    <div class="qr-icon">🎁</div>
-                    <div class="qr-title">VOCÊ GANHOU UM BRINDE!</div>
-                </div>
-                
-                <div class="qr-location">
-                    📍 <strong>Local:</strong> Banheiro dos Alunos
-                </div>
-                
-                <div class="qr-description">
-                    "Parabéns! Você é nosso visitante nº 1000! Escaneie para receber seu brinde exclusivo!"
-                </div>
-                
-                <div class="qr-image-container">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=http://brinde-gratuito-golpe.net/claim&color=e74c3c&bgcolor=ffffff&format=png&margin=10&qzone=2"
-                         alt="QR Code Brinde Falso"
-                         class="qr-image">
-                </div>
-                
-                <div class="qr-status status-danger">
-                    ❌ PERIGOSO - Golpe de Brinde
-                </div>
-            </div>
-            
-            <!-- QR CODE 6: CAFÉ (SEGURO) -->
-            <div class="qr-card safe">
-                <div class="qr-header">
-                    <div class="qr-icon">☕</div>
-                    <div class="qr-title">CANTINA DIGITAL</div>
-                </div>
-                
-                <div class="qr-location">
-                    📍 <strong>Local:</strong> Cantina/Lanchonete
-                </div>
-                
-                <div class="qr-description">
-                    Cardápio semanal da cantina com preços e opções. Pode fazer pedidos antecipados.
-                </div>
-                
-                <div class="qr-image-container">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://cantina.escola.edu.br/cardapio&color=27ae60&bgcolor=ffffff&format=png&margin=10&qzone=2"
-                         alt="QR Code Cantina"
-                         class="qr-image">
-                </div>
-                
-                <div class="qr-status status-safe">
-                    ✅ SEGURO - Serviço Oficial
-                </div>
+            <div class="qr-card" style="margin-top: 40px; background: rgba(255,255,255,0.9);">
+                <h3 style="color: #667eea; margin-bottom: 15px;">🎯 COMO JOGAR:</h3>
+                <ol style="text-align: left; padding-left: 20px;">
+                    <li>Encontre QR Codes pela escola</li>
+                    <li>Escaneie com seu celular</li>
+                    <li>Decida: Seguro ⚠️ ou Perigoso ☠️</li>
+                    <li>Ganhe pontos por respostas corretas</li>
+                    <li>Aprenda sobre segurança digital!</li>
+                </ol>
             </div>
         </div>
         
-        <button class="print-button" onclick="window.print()">
-            🖨️ IMPRIMIR TODOS OS QR CODES
+        <!-- TELA 2: ESCANEAMENTO -->
+        <div class="screen" id="screen2">
+            <div class="header">
+                <h1>📸 ESCANEIE UM QR CODE</h1>
+                <p class="subtitle">Use a câmera do seu celular</p>
+            </div>
+            
+            <div id="reader" class="scanner-container">
+                <div class="scanner-overlay"></div>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 1.5rem;">
+                    📱
+                </div>
+            </div>
+            
+            <p style="margin: 20px 0;">Aponte a câmera para um QR Code</p>
+            
+            <div class="progress-bar">
+                <div class="progress" id="scanProgress"></div>
+            </div>
+            
+            <div id="reader">
+            <button class="btn btn-scan" onclick="startScan()">
+                🔍 SIMULAR ESCANEAMENTO (TESTE)
+            </button>
+            </div>
+
+            <button class="btn" onclick="nextScreen(1)">
+                ↩️ VOLTAR
+            </button>
+        </div>
+        
+        <!-- TELA 3: DECISÃO -->
+        <div class="screen" id="screen3">
+            <div class="header">
+                <h1 id="qrTitle">QR CODE ENCONTRADO!</h1>
+                <p class="subtitle" id="qrDescription">Descrição aparecerá aqui</p>
+            </div>
+            
+            <!-- QR CODE DINÂMICO -->
+            <img id="dynamicQR" src="" class="qr-image" alt="QR Code">
+            
+            <div style="margin: 20px 0;">
+                <p><strong>Você acha que este QR Code é:</strong></p>
+            </div>
+            
+            <button class="btn btn-safe" onclick="escolher('safe')">
+                ✅ SEGURO
+            </button>
+            
+            <button class="btn btn-danger" onclick="escolher('danger')">
+                ❌ PERIGOSO
+            </button>
+            
+            <button class="btn" onclick="nextScreen(2)">
+                🔍 ESCANEAR OUTRO
+            </button>
+        </div>
+        
+        <!-- TELA 4: RESULTADO FINAL -->
+        <div class="screen" id="screen4">
+            <div class="header celebrate">
+                <h1>🏆 MISSÃO CUMPRIDA!</h1>
+                <p class="subtitle">Você completou o desafio!</p>
+            </div>
+            
+            <div style="font-size: 5rem; margin: 30px 0;" id="trophy">
+                🏆
+            </div>
+            
+            <div class="qr-card" style="background: rgba(255,255,255,0.9);">
+                <h3 style="color: #667eea;">SEU RESULTADO:</h3>
+                <p style="font-size: 2rem; margin: 20px 0;" id="finalScore">5/5</p>
+                <p id="finalMessage">Mensagem de resultado</p>
+            </div>
+            
+            <button class="btn btn-scan" onclick="reiniciarJogo()">
+                🔄 JOGAR NOVAMENTE
+            </button>
+            
+            <div class="qr-card" style="margin-top: 30px; background: rgba(255,255,255,0.9);">
+                <h3 style="color: #667eea;">📚 O QUE APRENDEMOS:</h3>
+                <ul style="text-align: left; padding-left: 20px;">
+                    <li>QR Codes em locais oficiais são seguros</li>
+                    <li>Promoções "boas demais" são perigosas</li>
+                    <li>Sempre verifique a URL antes de clicar</li>
+                    <li>Nunca forneça dados pessoais</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- FEEDBACK POPUP -->
+    <div class="feedback" id="feedback">
+        <h2 id="feedbackTitle">Feedback</h2>
+        <p id="feedbackText">Texto de feedback</p>
+        <button class="btn" onclick="fecharFeedback()" style="margin-top: 20px;">
+            OK, ENTENDI!
         </button>
-        
-        <div class="teacher-notes">
-            <h3>📝 NOTAS PARA O PROFESSOR:</h3>
-            <p><strong>QR Codes Seguros (Verde):</strong></p>
-            <ul style="margin-left: 20px; margin-bottom: 15px;">
-                <li>Em locais oficiais da escola</li>
-                <li>URLs começam com https://</li>
-                <li>Domínios .edu.br ou .gov.br</li>
-                <li>Propósito educativo ou informativo</li>
-            </ul>
-            
-            <p><strong>QR Codes Perigosos (Vermelho):</strong></p>
-            <ul style="margin-left: 20px; margin-bottom: 15px;">
-                <li>Em locais não oficiais (banheiro, estacionamento)</li>
-                <li>Promessas irrealistas (brindes, prêmios)</li>
-                <li>URLs começam com http:// (sem 's' de segurança)</li>
-                <li>Domínios suspeitos (.fake, .golpe, .site)</li>
-            </ul>
-            
-            <p><strong>Suspensos (Amarelo):</strong> Oferecem algo "gratuito" mas não claramente malicioso.</p>
-        </div>
-        
-        <!-- MAPA DA ESCOLA PARA COLOCAÇÃO -->
-        <div style="margin-top: 50px; padding: 25px; background: #f8f9fa; border-radius: 10px; border: 2px solid #dee2e6;">
-            <h3 style="color: #2c3e50; margin-bottom: 20px;">🗺️ SUGESTÃO DE DISTRIBUIÇÃO NA ESCOLA:</h3>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                <div style="padding: 15px; background: #d5f4e6; border-radius: 8px;">
-                    <strong>📚 Biblioteca:</strong> QR Code 1 (Seguro)
-                </div>
-                <div style="padding: 15px; background: #d5f4e6; border-radius: 8px;">
-                    <strong>👨‍🏫 Sala Professores:</strong> QR Code 2 (Seguro)
-                </div>
-                <div style="padding: 15px; background: #fef5e7; border-radius: 8px;">
-                    <strong>🚶 Corredor 1º Andar:</strong> QR Code 3 (Suspeito)
-                </div>
-                <div style="padding: 15px; background: #fadbd8; border-radius: 8px;">
-                    <strong>🚗 Estacionamento:</strong> QR Code 4 (Perigoso)
-                </div>
-                <div style="padding: 15px; background: #fadbd8; border-radius: 8px;">
-                    <strong>🚻 Banheiro:</strong> QR Code 5 (Perigoso)
-                </div>
-                <div style="padding: 15px; background: #d5f4e6; border-radius: 8px;">
-                    <strong>☕ Cantina:</strong> QR Code 6 (Seguro)
-                </div>
-            </div>
-            
-            <p style="margin-top: 20px; font-size: 14px; color: #666;">
-                <strong>Dica:</strong> Cole os QR Codes discretamente. Os alunos devem "descobri-los" durante a caça!
-            </p>
-        </div>
     </div>
 
     <script>
-        // Função para gerar QR Codes individuais se necessário
-        function gerarQRCodeIndividual(numero) {
-            const qrCodes = [
-                {
-                    nome: "Biblioteca",
-                    url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://biblioteca.escola.edu.br/catalogo&color=27ae60&format=png",
-                    local: "biblioteca-qr.png"
-                },
-                {
-                    nome: "Sala dos Professores", 
-                    url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://escola.edu.br/comunicado-urgente&color=27ae60&format=png",
-                    local: "professores-qr.png"
-                },
-                {
-                    nome: "Corredor",
-                    url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=http://musicas-gratis-fake.site/download&color=f39c12&format=png",
-                    local: "corredor-qr.png"
-                },
-                {
-                    nome: "Estacionamento",
-                    url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=http://premio-estacionamento-golpe.com/resgate&color=e74c3c&format=png",
-                    local: "estacionamento-qr.png"
-                },
-                {
-                    nome: "Vale um Brinde",
-                    url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=http://brinde-gratuito-golpe.net/claim&color=e74c3c&format=png",
-                    local: "brinde-qr.png"
-                },
-                {
-                    nome: "Cantina",
-                    url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://cantina.escola.edu.br/cardapio&color=27ae60&format=png",
-                    local: "cantina-qr.png"
+
+    let totalRespondidos = 0;
+
+
+    function startScan() {
+    nextScreen(2);
+    iniciarCamera();
+}
+
+let cameraQR = null;
+
+function iniciarCamera() {
+    if (!window.Html5Qrcode) {
+        alert("Biblioteca Html5Qrcode não carregada.");
+        return;
+    }
+
+    cameraQR = new Html5Qrcode("reader");
+
+    cameraQR.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        (decodedText) => {
+            console.log("QR lido:", decodedText);
+
+            cameraQR.stop();
+
+            let qrId = null;
+
+            if (decodedText.includes("qr=")) {
+                const url = new URL(decodedText);
+                qrId = url.searchParams.get("qr");
+            } 
+            else if (decodedText.includes("QR:")) {
+                qrId = decodedText.replace("QR:", "").trim();
+            }
+
+            if (qrId) {
+
+                if (qrRespondidos.has(Number(qrId))) {
+                    alert("Esse QR já foi usado!");
+                    return;
                 }
-            ];
+
+                const index = qrAleatorios.findIndex(q => q.id == qrId);
+
+                if (index >= 0) {
+                    currentQRIndex = index;
+                    nextScreen(3);
+                } else {
+                    alert("QR Code não reconhecido.");
+                }
+
+            } else {
+                alert("QR inválido.");
+            }
+        }
+    ).catch(err => {
+        console.error(err);
+        alert("Erro ao abrir a câmera: " + err);
+    });
+}
+
+        // DADOS DO JOGO
+        const qrCodes = [
+            {
+                id: 1,
+                title: "📚 Biblioteca da Escola",
+                description: "QR Code no mural da biblioteca. Leva ao catálogo online de livros.",
+                safe: true,
+                qrUrl: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://biblioteca.escola.edu.br&color=2c3e50&bgcolor=ffffff",
+                explanation: "✅ CORRETO! QR Codes em ambientes educacionais oficiais são seguros."
+            },
+            {
+                id: 2,
+                title: "🎁 iPhone Grátis",
+                description: "Colado no ponto de ônibus. Promete iPhone 14 grátis!",
+                safe: false,
+                qrUrl: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://iphone-gratis-golpe.fake&color=e74c3c&bgcolor=ffffff",
+                explanation: "❌ PERIGOSO! Promoções irrealistas são sempre golpes."
+            },
+            {
+                id: 3,
+                title: "🏫 Site da Escola",
+                description: "No mural da secretaria. Leva ao site oficial da escola.",
+                safe: true,
+                qrUrl: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://escola.gov.br&color=2c3e50&bgcolor=ffffff",
+                explanation: "✅ CORRETO! Sites .gov.br são sempre oficiais e seguros."
+            },
+            {
+                id: 4,
+                title: "🔐 Teste de Segurança",
+                description: "Diz: 'Escaneie para ver quem viu seu perfil no Instagram!'",
+                safe: false,
+                qrUrl: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://teste-falso-instagram.fake&color=e74c3c&bgcolor=ffffff",
+                explanation: "❌ PERIGOSO! Nunca faça login por QR Codes desconhecidos."
+            },
+            {
+                id: 5,
+                title: "📅 Calendário Escolar",
+                description: "Na sala dos professores. Mostra datas importantes da escola.",
+                safe: true,
+                qrUrl: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://calendario.escola.edu.br&color=2c3e50&bgcolor=ffffff",
+                explanation: "✅ CORRETO! Recursos internos da escola são confiáveis."
+            }
+        ];
+        
+        // VARIÁVEIS DO JOGO
+        let score = 0;
+        let currentQRIndex = 0;
+        let qrRespondidos = new Set();
+        let qrAleatorios = [...qrCodes].sort(() => Math.random() - 0.5);
+        
+        // FUNÇÕES DE CONTROLE
+        function nextScreen(screenNumber) {
+            // Esconde todas as telas
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
             
-            if(numero >= 1 && numero <= 6) {
-                const qr = qrCodes[numero-1];
-                window.open(qr.url, '_blank');
-                console.log(`QR Code ${numero} (${qr.nome}) gerado!`);
+            // Mostra a tela solicitada
+            document.getElementById(`screen${screenNumber}`).classList.add('active');
+            
+            // Ações específicas por tela
+            if(screenNumber === 2) {
+                iniciarEscaneamento();
+                iniciarCamera();
+            } else if(screenNumber === 3) {
+                mostrarQRCode();
+            } else if(screenNumber === 4) {
+                mostrarResultadoFinal();
             }
         }
         
-        // Adiciona evento de impressão personalizado
-        window.addEventListener('beforeprint', () => {
-            document.querySelector('.print-button').style.display = 'none';
-            document.querySelector('.teacher-notes').style.display = 'none';
-        });
+        function iniciarEscaneamento() {
+            const progress = document.getElementById('scanProgress');
+            progress.style.width = '0%';
+            
+            // Anima a barra de progresso
+            setTimeout(() => {
+                progress.style.width = '100%';
+            }, 100);
+        }
         
-        window.addEventListener('afterprint', () => {
-            document.querySelector('.print-button').style.display = 'block';
-            document.querySelector('.teacher-notes').style.display = 'block';
-        });
+        function simularEscaneamento() {
+            // Simula o escaneamento de um QR Code
+            const scanner = document.querySelector('.scanner-container');
+            scanner.classList.add('vibrate');
+            
+            // Som de escaneamento
+            fazerSomEscaneamento();
+            
+            // Após 2 segundos, mostra QR Code
+            setTimeout(() => {
+                scanner.classList.remove('vibrate');
+                nextScreen(3);
+            }, 2000);
+        }
         
-        // Instruções para o professor
-        console.log("🎯 QR CODES PARA IMPRESSÃO - INSTRUÇÕES:");
-        console.log("1. Clique no botão 'IMPRIMIR' ou pressione Ctrl+P");
-        console.log("2. Imprima em papel A4 (recomendado: qualidade média)");
-        console.log("3. Recorte cada QR Code nas linhas pontilhadas");
-        console.log("4. Cole nos locais indicados na escola");
-        console.log("5. Os QR Codes levam a páginas fictícias educativas");
-        console.log("");
-        console.log("📱 Para gerar QR Codes individuais, use:");
-        console.log("gerarQRCodeIndividual(1) - Biblioteca");
-        console.log("gerarQRCodeIndividual(2) - Sala dos Professores");
-        console.log("gerarQRCodeIndividual(3) - Corredor");
-        console.log("gerarQRCodeIndividual(4) - Estacionamento");
-        console.log("gerarQRCodeIndividual(5) - Vale um Brinde");
-        console.log("gerarQRCodeIndividual(6) - Cantina");
+        function mostrarQRCode() {
+            // Pega um QR Code não respondido
+            const qrCode = qrAleatorios[currentQRIndex];
+            
+            // Atualiza a tela
+            document.getElementById('qrTitle').textContent = qrCode.title;
+            document.getElementById('qrDescription').textContent = qrCode.description;
+            document.getElementById('dynamicQR').src = qrCode.qrUrl;
+            document.getElementById('dynamicQR').alt = qrCode.title;
+            
+            // Atualiza progresso no título
+            document.title = `QR ${currentQRIndex + 1}/5 - Caça aos QR Codes`;
+        }
         
-        // Atalhos de teclado para o professor
-        document.addEventListener('keydown', (e) => {
-            // Ctrl+Shift+1 a 6 gera QR Codes individuais
-            if(e.ctrlKey && e.shiftKey && e.key >= '1' && e.key <= '6') {
-                e.preventDefault();
-                gerarQRCodeIndividual(parseInt(e.key));
+        function escolher(escolha) {
+            const qrCode = qrAleatorios[currentQRIndex];
+            const correto = (escolha === 'safe' && qrCode.safe) || 
+                           (escolha === 'danger' && !qrCode.safe);
+            
+            // Atualiza pontuação
+            if(correto) {
+                score++;
+                document.getElementById('score').textContent = score;
+                document.getElementById('scoreBoard').classList.add('celebrate');
+                setTimeout(() => {
+                    document.getElementById('scoreBoard').classList.remove('celebrate');
+                }, 500);
             }
             
-            // Ctrl+P com mensagem personalizada
-            if(e.ctrlKey && e.key === 'p') {
-                e.preventDefault();
-                alert("🎯 Imprimindo QR Codes para a Caça na Escola!\n\nRecomendações:\n• Papel A4\n• Qualidade Média\n• Recortar após impressão");
-                setTimeout(() => window.print(), 500);
+            // Marca como respondido
+            qrRespondidos.add(qrCode.id);
+            
+            // Mostra feedback
+            mostrarFeedback(correto, qrCode);
+            
+            // Avança para próximo QR ou final
+            totalRespondidos++;
+            console.log("Respondidos:", totalRespondidos);
+            
+            if(totalRespondidos >= qrCodes.length) {
+                setTimeout(() => {
+                    nextScreen(4);
+                }, 3000);
+            } else {
+                setTimeout(() => {
+                    nextScreen(2);
+                }, 3000);
+            }
+        }
+        
+        function mostrarFeedback(correto, qrCode) {
+            const feedback = document.getElementById('feedback');
+            const title = document.getElementById('feedbackTitle');
+            const text = document.getElementById('feedbackText');
+            
+            if(correto) {
+                title.textContent = "✅ CORRETO!";
+                title.style.color = "#4CAF50";
+            } else {
+                title.textContent = "❌ INCORRETO";
+                title.style.color = "#f44336";
+            }
+            
+            text.innerHTML = `
+                ${qrCode.explanation}
+                <br><br>
+                <strong>Lição:</strong> ${qrCode.safe ? 
+                    'Este QR Code é seguro porque vem de fonte confiável.' : 
+                    'Este QR Code é perigoso porque promete algo irreal ou pede dados pessoais.'}
+            `;
+            
+            feedback.classList.add('show');
+            
+            // Feedback sonoro
+            fazerSomFeedback(correto);
+        }
+        
+        function fecharFeedback() {
+            document.getElementById('feedback').classList.remove('show');
+        }
+        
+        function mostrarResultadoFinal() {
+            const finalScore = document.getElementById('finalScore');
+            const finalMessage = document.getElementById('finalMessage');
+            const trophy = document.getElementById('trophy');
+            
+            finalScore.textContent = `${score}/${qrCodes.length}`;
+            
+            // Define mensagem baseada na pontuação
+            if(score === qrCodes.length) {
+                finalMessage.textContent = "🎯 PERFEITO! Você é um Expert em Segurança Digital!";
+                trophy.textContent = "🏆";
+            } else if(score >= qrCodes.length * 0.7) {
+                finalMessage.textContent = "👍 ÓTIMO TRABALHO! Você sabe identificar a maioria dos riscos!";
+                trophy.textContent = "⭐";
+            } else {
+                finalMessage.textContent = "📚 CONTINUE APRENDENDO! A segurança digital é importante!";
+                trophy.textContent = "📚";
+            }
+            
+            // Efeitos de celebração
+            document.body.classList.add('celebrate');
+        }
+        
+        function reiniciarJogo() {
+            // Reseta variáveis
+            score = 0;
+            currentQRIndex = 0;
+            qrRespondidos.clear();
+            qrAleatorios = [...qrCodes].sort(() => Math.random() - 0.5);
+            
+            // Reseta UI
+            document.getElementById('score').textContent = '0';
+            document.body.classList.remove('celebrate');
+            
+            // Volta para início
+            nextScreen(1);
+        }
+        
+        // FUNÇÕES DE ÁUDIO
+        function fazerSomEscaneamento() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Som de "bip" de escaneamento
+                for(let i = 0; i < 3; i++) {
+                    setTimeout(() => {
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        oscillator.frequency.value = 1000 + (i * 200);
+                        gainNode.gain.value = 0.1;
+                        
+                        oscillator.start();
+                        setTimeout(() => oscillator.stop(), 100);
+                    }, i * 300);
+                }
+            } catch(e) {
+                // Navegador não suporta áudio
+            }
+        }
+        
+        function fazerSomFeedback(correto) {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // Frequência diferente para acerto/erro
+                oscillator.frequency.value = correto ? 800 : 400;
+                gainNode.gain.value = 0.1;
+                
+                oscillator.start();
+                setTimeout(() => oscillator.stop(), 300);
+            } catch(e) {
+                // Navegador não suporta áudio
+            }
+        }
+        
+        // INICIALIZAÇÃO
+        window.onload = function() {
+            console.log("🎮 Jogo Caça aos QR Codes carregado!");
+            console.log("📱 Otimizado para celular - alunos podem jogar com seus dispositivos");
+            
+            // Detecta se está em celular
+            if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                console.log("📱 Dispositivo móvel detectado - experiência otimizada");
+            }
+            
+            // Instruções para o professor
+            console.log("\n🎯 INSTRUÇÕES PARA O PROFESSOR:");
+            console.log("1. Alunos acessam este site no celular");
+            console.log("2. Podem escanear QR Codes físicos pela escola");
+            console.log("3. Ou usar 'Simular Escaneamento' para teste");
+            console.log("4. Decidem se cada QR é seguro ou perigoso");
+            console.log("5. Aprendem sobre segurança digital na prática!");
+        };
+        
+        // Suporte a gestos touch
+        let startX, startY;
+        
+        document.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+        
+        document.addEventListener('touchend', (e) => {
+            if(!startX || !startY) return;
+            
+            const endX = e.changedTouches[0].clientX;
+            const endY = e.changedTouches[0].clientY;
+            
+            const diffX = endX - startX;
+            const diffY = endY - startY;
+            
+            // Swipe esquerda/direita para navegar (opcional)
+            if(Math.abs(diffX) > 50 && Math.abs(diffY) < 50) {
+                if(diffX > 0) {
+                    // Swipe direito - voltar
+                    if(currentQRIndex > 0) {
+                        currentQRIndex--;
+                        mostrarQRCode();
+                    }
+                }
             }
         });
     </script>
