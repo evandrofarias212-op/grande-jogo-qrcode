@@ -302,7 +302,7 @@
             
             <div id="reader">
             <button class="btn btn-scan" onclick="startScan()">
-                🔍 SIMULAR ESCANEAMENTO (TESTE)
+                🔍 ESCANEAMENTO 
             </button>
             </div>
 
@@ -333,9 +333,7 @@
                 ❌ PERIGOSO
             </button>
             
-            <button class="btn" onclick="nextScreen(2)">
-                🔍 ESCANEAR OUTRO
-            </button>
+            
         </div>
         
         <!-- TELA 4: RESULTADO FINAL -->
@@ -355,9 +353,6 @@
                 <p id="finalMessage">Mensagem de resultado</p>
             </div>
             
-            <button class="btn btn-scan" onclick="reiniciarJogo()">
-                🔄 JOGAR NOVAMENTE
-            </button>
             
             <div class="qr-card" style="margin-top: 30px; background: rgba(255,255,255,0.9);">
                 <h3 style="color: #667eea;">📚 O QUE APRENDEMOS:</h3>
@@ -392,6 +387,8 @@
 
 let cameraQR = null;
 
+let lendoAgora = false;
+
 function iniciarCamera() {
     if (!window.Html5Qrcode) {
         alert("Biblioteca Html5Qrcode não carregada.");
@@ -399,6 +396,8 @@ function iniciarCamera() {
     }
 
     cameraQR = new Html5Qrcode("reader");
+    
+    lendoAgora = false;
 
     cameraQR.start(
          { facingMode: "environment" },
@@ -409,7 +408,13 @@ function iniciarCamera() {
             disableFlip: false
         },
         (decodedText) => {
+
+            if (lendoAgora) return;
+            lendoAgora = true;
+
             console.log("QR lido:", decodedText);
+
+            
 
             cameraQR.stop();
 
@@ -427,6 +432,7 @@ function iniciarCamera() {
 
                 if (qrRespondidos.has(Number(qrId))) {
                     alert("Esse QR já foi usado!");
+                    lendoAgora = false;
                     return;
                 }
 
@@ -437,10 +443,12 @@ function iniciarCamera() {
                     nextScreen(3);
                 } else {
                     alert("QR Code não reconhecido.");
+                    lendoAgora = false;
                 }
 
             } else {
                 alert("QR inválido.");
+                lendoAgora = false;
             }
         }
     ).catch(err => {
@@ -650,6 +658,9 @@ function iniciarCamera() {
         }
         
         function reiniciarJogo() {
+
+
+
             // Reseta variáveis
             score = 0;
             currentQRIndex = 0;
@@ -659,6 +670,7 @@ function iniciarCamera() {
             // Reseta UI
             document.getElementById('score').textContent = '0';
             document.body.classList.remove('celebrate');
+            lendoAgora = false;
             
             // Volta para início
             nextScreen(1);
