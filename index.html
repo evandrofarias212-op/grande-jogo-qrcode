@@ -406,7 +406,7 @@ function iniciarCamera() {
     cameraQR = new Html5Qrcode("reader");
 
     cameraQR.start(
-        { facingMode: { exact: "environment" } },
+        { facingMode: "environment" },
         {
             fps: 10,
             qrbox: { width: 250, height: 250 },
